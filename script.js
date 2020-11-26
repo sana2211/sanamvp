@@ -35,7 +35,13 @@ function renderDataFromEndpointURL1(data)
       $("main").append(`<img src=${item.thumbnail_url}><br>`);
       $("main").append(`<h2>${item.name}</h2>`);
       $("main").append(`<h4>Nutrition Fact: </h4><br>`);
-      Object.entries(item.nutrition).forEach(([k,v])=> $("main").append(`<p>${k} : ${v}</p>`))
+       Object.entries(item.nutrition).forEach(([k,v])=> 
+      {
+        if(k != "updated_at")
+        {
+          $("main").append(`<p>${k} : ${v}</p>`)
+        }   
+      })
       
 });
 
