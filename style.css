@@ -4,14 +4,19 @@
   
   body {
     font-family: 'Roboto', sans-serif;
-    background-color: green;
+    background-color: rgb(188, 235, 188);
   }
-  
-  button, input[type="text"] {
+
+input[type="text"] {
     padding: 5px;
-    
+    width: 200px;
   }
   
+  button {
+    padding: 5px;
+    width: 100px;
+  }
+
   button:hover {
     cursor: pointer;
   }
@@ -28,7 +33,8 @@
   .hidden {
     display: none;
   }
-img{
+
+  img{
     width: 400px;
     height: 400px;
   }
