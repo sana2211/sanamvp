@@ -1,107 +1,78 @@
-'use strict';
-// put your own value below!
-const endpointURL1 = "https://www.themealdb.com/api/json/v1/1/random.php?s=eggs";
-const endpointURL2 = "tasty.p.rapidapi.com";
+const searchForm = document.querySelector("form");
+const searchResultDiv = document.querySelector(".search-result");
+const container = document.querySelector(".container");
+let searchQuery = "";
 
+const HOST = "tasty.p.rapidapi.com";
+const APP_key = "cd9209b5c5msh05d3c5b7d6e2767p1dd595jsna33064bfd4db";
+ const baseURL1 = "https://tasty.p.rapidapi.com/recipes/list?from=0&size=5&tags=under_30_minutes&q=";
+  const baseURL2 ="https://www.themealdb.com/api/json/v1/1/random.php";
 
-function getMealResults(){
-  fetch(endpointURL1)
-    .then(response =>{
-        if (response.ok){
-            return response.json();
-        }        
-    })
-    .then(response =>renderStuff(response.meals))
-    .catch(err =>alert(err));    
-}
-
-function getVideos(){
-  fetch(endpointURL1)
-    .then(response =>{
-        if (response.ok){
-            return response.json();
-        }        
-    })
-    .then(response =>renderOtherStuff(response.meals))
-    .catch(err =>alert(err));    
-}
-
-function renderStuff(stuff)
+function fetchFromEndpointURL1(searchTerm)
 {
-  $("main").append(`<hr>`);
-  $("main").append("<br><br><h2>From Endpoint URL 2:</h2>");
-  $("main").append("<h2>Meal:</h2>");
-  $("main").append(stuff[0]["strMeal"]);
-  $("main").append("<h2>Video:</h2>");
- $("main").append(`<a href="${stuff[0]["strYoutube"]}">${stuff[0]["strYoutube"]}</a><br>`);
+  fetch(baseURL1+searchTerm, { 
+    "method": "GET", 
+    "headers": {
+   "x-rapidapi-key": APP_key, 
+   "x-rapidapi-host": HOST}})
+  .then(response=>response.json())
+  .then(response=>renderDataFromEndpointURL1(response.results))
+  .catch(err=>console.log(err));
+}
 
-  $("main").append(`<iframe width="420" height="345" src="${stuff[0]["strYoutube"]}">
-</iframe><br><br>`);
-  $("main").append(`<hr>`);
-  
+function fetchFromEndpointURL2()
+{
+  fetch(baseURL2)
+  .then(response=>response.json())
+  .then(response=>renderDataFromEndpointURL2(response.meals[0]))
+  .catch(err=>console.log(err));
+}
+
+function renderDataFromEndpointURL1(data)
+{
+  $("main").html("");
+  data.forEach((item)=>{
+      $("main").append(`<img src=${item.thumbnail_url}><br>`);
+      $("main").append(`<h2>${item.name}</h2>`);
+      $("main").append(`<h4>Nutrition Fact: </h4><br>`);
+      Object.entries(item.nutrition).forEach(([k,v])=> $("main").append(`<p>${k} : ${v}</p>`))
+      
+});
+
+}
+
+function renderDataFromEndpointURL2(data)
+{
+   $("main").html("");
+  $("main").append(`<center><p>Check out this video on ${data.strMeal}</p></center>`);
+  $("main").append(`<center><iframe width="420" height="315"
+src="${data.strYoutube.replace("watch?v=", "embed/")}">
+</iframe></center>`);
+  $("main").append(`<p>${data.strInstructions}</p>`);
 }
 
 
-function renderOtherStuff(stuff)
+function submitSearch()
 {
-  $("main").append(`<hr>`);
-  $("main").append("<br><br><h2>From Endpoint URL 1:</h2>");
-  $("main").append("<h2>Meal:</h2>");
-  $("main").append(stuff[0]["strMeal"]);
-   $("main").append("<h2>Recipe:</h2>");
-   $("main").append(`<p align="justify">${stuff[0]["strInstructions"]}</p>`);
-  $("main").append(`<hr>`);
-}
-
-
-/*
-function renderStuffWithSearch(stuff)
-{
-  //console.log(stuff);
-  stuff.forEach((x)=> {
-    $("main").append(`<p>${x.strMeal}</p>`);
-    $("main").append(`<button id="getrecipe">Click to get recipe</button>`);
-    $("main").append(`<img src="${x.strMealThumb}">`);
-    $("main").append(`<div id="displayrecipe"></div>`)
-    $("main").append(`<br>`);
-
-    $("#getrecipe").click(()=>{
-
-fetch("https://www.themealdb.com/api/json/v1/1/search.php?s="+x.strMeal.replace(" ", "+"))
-    .then(response =>{
-        if (response.ok){
-            return response.json();
-        }        
-    })
-    .then(response => $("#displayrecipe").append(`<iframe width="420" height="345" src="${response.strSource}">
-</iframe>`))
-    .catch(err =>alert(err)); 
-
-    })
+  $("form").submit((e)=>{
+    e.preventDefault();
+    const search = $("#searchQuery").val();
+    fetchFromEndpointURL1(search);
   })
-  
-  
-
-  
-}
-*/
-function init(){
-    getMealResults();
-    getVideos();
-    /*$("#searchButton").click(()=>{
-      let searchTerm = $("#search").val().replace(" ", "+");
-      console.log(searchTerm)
-      //https://www.themealdb.com/api/json/v1/1/filter.php?c=vegetarian
-
-fetch("https://www.themealdb.com/api/json/v1/1/filter.php?c="+searchTerm)
-    .then(response => {
-        if (response.ok){
-            return response.json();
-        }        
-    })
-    .then(response => renderStuffWithSearch(response.meals))
-    .catch(err =>alert(err));  
-    })*/
 }
 
+function submitForEndPointURL2()
+{
+  $("#randomVideo").click((e)=>{
+    fetchFromEndpointURL2();
+  })
+}
+
+function init()
+{
+ submitSearch();
+ submitForEndPointURL2();
+}
 $(init);
+
+
